@@ -10,6 +10,12 @@ class SchemeStorage(object):
         schema_obj.save()
         return str(schema_obj.id)
 
+    def get_one(self, *args, **kwargs):
+        res = self.get(*args, **kwargs)
+        if res:
+            return res[0]
+        return None
+
     def get_count(self, account_id=None, client_type=None):
         args = {
             'is_deleted': False

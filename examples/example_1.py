@@ -17,7 +17,9 @@ SCHEMA1 = {
                 'status': [200],
                 'check_field': [],
                 'save_to_vars': {
-                    'ip': 'ip'
+                    '__result__': {
+                        'ip': 'ip'
+                    }
                 }
             }
         }

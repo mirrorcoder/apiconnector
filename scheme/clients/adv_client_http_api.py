@@ -24,8 +24,13 @@ class AdvClientHttpApi(AbstractAdvertiserAdapter):
             i = d
             for f in field.split("."):
                 if type(i) == dict:
+                    if f == '$':
+                        i = d
                     i = i.get(f, {})
                 elif type(i) in [tuple, list]:
+                    if f == '$':
+                        i = d
+                        continue
                     try:
                         index = int(f)
                     except ValueError:
@@ -57,10 +62,24 @@ class AdvClientHttpApi(AbstractAdvertiserAdapter):
                     return False
             return True
 
+        def save_vars_recursive(res, ns, save_to_vars):
+            for dst, src in save_to_vars.items():
+                if type(src) in [str]:
+                    ns[dst] = get_field(res, src)
+                elif type(src) in [dict]:
+                    if not dst in ns:
+                        ns[dst] = {}
+                    save_vars_recursive(res, ns[dst], src)
+
+
         def save_vars(res):
             json_response = res.json()
-            for dst, src in save_to_vars.items():
-                self.ns[dst] = get_field(json_response, src)
+            save_vars_recursive(json_response, self.ns, save_to_vars)
+
+        # def save_vars(res):
+        #     json_response = res.json()
+        #     for dst, src in save_to_vars.items():
+        #         self.ns[dst] = get_field(json_response, src)
 
         def call_reqmethod():
             res = self.reqmethod(url, params if params else None, method, headers=headers, data=data__ if data__ else None)
@@ -82,7 +101,7 @@ class AdvClientHttpApi(AbstractAdvertiserAdapter):
         return True
 
     def get_value_var(self, name_value):
-        return self.ns.get(name_value, None)
+        return self.ns.get(name_value, {})
 
     def call_method(self, name_method, vars):
         result = self.build_and_execute_schema(self.schema.get(name_method, []), vars)

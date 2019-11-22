@@ -58,8 +58,8 @@ def login_accounts():
 @api_login.route("/self", methods=['GET'])
 @requires_login
 def self_accounts():
-    user = storage.account.get_one(db_id=current_user._id)
+    user = storage.account.get_one(db_id=str(current_user.id))
     return Response(json.dumps({
         'status': STATUS_OK,
-        'user': user.to_dict()
+        'user': user
     }), status=200)

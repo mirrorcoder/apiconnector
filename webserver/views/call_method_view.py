@@ -13,10 +13,10 @@ storage = MongoStorage()
 
 def get_args_by_method():
     if request.method == 'GET':
-        return request.args
+        return dict(request.args)
     elif request.method in ['POST', 'PUT', 'DELETE']:
-        form = request.form
-        json_data = request.json
+        form = dict(request.form)
+        json_data = dict(request.json)
         if not form is None:
             return form
         if not json_data is None:
@@ -41,8 +41,10 @@ def create_response_from_dict(result):
 @call_method_view.route("method/scheme/<schema_id>/method/<name_method>",
                         methods=['GET', 'POST', 'PUT', 'DELETE'])
 def call_method_view_func(schema_id, name_method):
-    schema = storage.scheme.get(db_id=schema_id)
-    with FactoryClient(schema) as client1:
+    schema = storage.scheme.get_one(db_id=schema_id)
+    if not schema:
+        return Response(status=404)
+    with FactoryClient(schema.get('schema', {})) as client1:
         result = client1.call_method(name_method, get_args_by_method())
         result = create_response_from_dict(result)
     return result

@@ -21,7 +21,7 @@ SCHEMA_NOT_FOUND_STATUS = -1
 @requires_login
 def create_schema():
     data = req_parser_scheme_input.parse_args()
-    schema_id = storage.scheme.create(str(current_user._id),
+    schema_id = storage.scheme.create(str(current_user.id),
                                       data.get('client_type', None),
                                       data.get('schema', {}))
     return Response(json.dumps({
@@ -35,8 +35,8 @@ def create_schema():
 def get_scheme():
     count = min(request.args.get('count', MAX_COUNT_SCHEME_GET), MAX_COUNT_SCHEME_GET)
     offset = request.args.get('offset', 0)
-    total = storage.scheme.get_count(account_id=str(current_user._id))
-    scheme = storage.scheme.get(account_id=str(current_user._id), offset=offset, count=count)
+    total = storage.scheme.get_count(account_id=str(current_user.id))
+    scheme = storage.scheme.get(account_id=str(current_user.id), offset=offset, count=count)
     return Response(json.dumps({
         'status': STATUS_OK,
         'scheme': scheme,
@@ -50,7 +50,7 @@ def get_scheme():
 @api_scheme.route("/<schema_id>", methods=['GET'])
 @requires_login
 def get_schema(schema_id):
-    schema = storage.scheme.get_one(account_id=str(current_user._id), db_id=schema_id)
+    schema = storage.scheme.get_one(account_id=str(current_user.id), db_id=schema_id)
     return Response(json.dumps({
         'status': STATUS_OK,
         'schema': schema
@@ -59,7 +59,7 @@ def get_schema(schema_id):
 @api_scheme.route("/<schema_id>", methods=['PUT'])
 @requires_login
 def update_schema(schema_id):
-    schema = storage.scheme.get_one(account_id=str(current_user._id), db_id=schema_id)
+    schema = storage.scheme.get_one(account_id=str(current_user.id), db_id=schema_id)
     if not schema:
         return Response(json.dumps({
             'status': STATUS_OK,
@@ -75,7 +75,7 @@ def update_schema(schema_id):
 @api_scheme.route("/<schema_id>", methods=['DELETE'])
 @requires_login
 def delete_schema(schema_id):
-    schema = storage.scheme.get_one(account_id=str(current_user._id), db_id=schema_id)
+    schema = storage.scheme.get_one(account_id=str(current_user.id), db_id=schema_id)
     if not schema:
         return Response(json.dumps({
             'status': STATUS_OK,
