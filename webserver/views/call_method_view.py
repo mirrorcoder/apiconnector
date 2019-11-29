@@ -45,6 +45,6 @@ def call_method_view_func(schema_id, name_method):
     if not schema:
         return Response(status=404)
     with FactoryClient(schema.get('schema', {})) as client1:
-        result = client1.call_method(name_method, get_args_by_method())
+        result = client1.call_method(name_method, get_args_by_method(), request.method.lower())
         result = create_response_from_dict(result)
     return result

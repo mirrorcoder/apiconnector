@@ -103,8 +103,12 @@ class AdvClientHttpApi(AbstractAdvertiserAdapter):
     def get_value_var(self, name_value):
         return self.ns.get(name_value, {})
 
-    def call_method(self, name_method, vars):
-        result = self.build_and_execute_schema(self.schema.get(name_method, []), vars)
+    def call_method(self, name_method, vars, method):
+        method_scheme = self.schema.get(name_method, {})
+        if type(method_scheme) in [dict]:
+            method_scheme = method_scheme.get().get(method, [])
+        result = self.build_and_execute_schema(method_scheme,
+                                               vars)
         return self.get_value_var('__result__')
 
 
